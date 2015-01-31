@@ -1,83 +1,106 @@
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.Map
+import scala.collection.mutable
 import scala.io.Source
-import scala.math
 
 // TODO define user and item classes/types to achieve more safety ... but for this I need to first learn how to properly implement equality for user-defined types ...
 
-class Rating(val user: Int, val item: Int, val value: Double) {}
+/**
+* Case classes fit well in this case, it will implement hashCode, equals, and toString for you
+* {} at the end is optional
+*/
+case class Rating(user: Int, item: Int, value: Double)
+object Rating {
 
+  def fromTsvLine(line: String): Rating = {
+    val fields = line.split("\\t")
+    Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble)
+  }
 
+  def fromTsvFile(filename: String): Seq[Rating] = {
+    Source.fromFile(filename)
+      .getLines
+      .map(fromTsvLine)
+      .toSeq
+  }
+}
+
+/**
+* rmse as a default method
+*/
 trait Rater {
+
+  def ratings: Seq[Rating]
+
   def rate(user: Int, item: Int): Double
+
+  def rmse(testRaitings: Seq[Rating]): Double = {
+    val distances = testRaitings.map { r =>
+      math.pow(rate(r.user, r.item) - r.value, 2)
+    }
+    distances.sum / distances.length
+  }
+
 }
 
 
-class GlobalAverage(val average: Double) extends Rater {
-  def this(ratings: Seq[Rating]) = this(ratings.map(_.value).sum / ratings.length)
+case class GlobalAverage(ratings: Seq[Rating]) extends Rater {
+
+  lazy val average = ratings.map(_.value).sum / ratings.size
+
   def rate(user: Int, item: Int) = average
+
 }
 
+/**
+* http://twitter.github.io/effectivescala/ use mutable.Collection, to be more explicit
+* You can use a object with the same name as the class as a factory
+*/
+case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
 
-// TODO this must be more elegant
-object Util {
-  def userAverages(ratings: Seq[Rating]): Map[Int, Double] = {
+  /**
+  * collection(key) = value is syntactic sugar for collection.update(key, value)
+  * a -> b is sugar for (a, b)
+  */
+  private lazy val averages: Map[Int, Double] = {
     // TODO use groupBy and mapValues etc.
-    val sumByUser = new HashMap[Int, Double]()
-    val countByUser = new HashMap[Int, Int]()
+    val sumByUser = mutable.HashMap.empty[Int, Double]
+    val countByUser = mutable.HashMap.empty[Int, Int]
     for (r <- ratings) {
-      sumByUser.update(r.user, sumByUser.getOrElse(r.user, 0.0) + r.value)
-      countByUser.update(r.user, countByUser.getOrElse(r.user, 0) + 1)
+      sumByUser(r.user) = sumByUser.getOrElse(r.user, 0.0) + r.value
+      countByUser(r.user) = countByUser.getOrElse(r.user, 0) + 1
     }
-    return for ((k, v) <- sumByUser) yield (k, v / countByUser(k))
+    for ((k, v) <- sumByUser.toMap) yield k -> v / countByUser(k)
   }
-}
 
-class UserAverage(val averages: Map[Int, Double], val globalAverage: GlobalAverage) extends Rater {
-  def this(ratings: Seq[Rating]) = this(Util.userAverages(ratings), new GlobalAverage(ratings))
   def rate(user: Int, item: Int) = averages.getOrElse(user, globalAverage.average)
+
+}
+object UserAverage {
+
+  def apply(ratings: Seq[Rating]): UserAverage = apply(ratings, GlobalAverage(ratings))
+
 }
 
+/**
+* App is an special trait that removes the def main(args...) boilerplate
+*/
+object Run extends App {
+  // read in data
+  val train = Rating.fromTsvFile(args(0))
+  val test = Rating.fromTsvFile(args(1))
 
-object Tsv {
-  def readRatings(filename: String): Seq[Rating] = {
-    val lines = Source.fromFile(filename).getLines()
-    val ratings = for (line <- lines) yield {
-      val fields = line.split("\\t")
-      new Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble)
-    }
-    return ratings toList
-  }
-}
+  println(s"""training ratings: ${train.size}
+             |test ratings: ${test.size}
+             |""".stripMargin)
 
+  // create recommenders
+  val ga = GlobalAverage(train)
+  val ua = UserAverage(train)
 
-object Eval {
-  def rmse(rater: Rater, ratings: Seq[Rating]): Double = {
-    val distances = ratings map (r => math.pow(rater.rate(r.user, r.item) - r.value, 2))
-    val sum = distances.foldLeft(0.0)(_ + _)
-    return sum / distances.length
-  }
-}
-
-
-object Run {
-  def main(args: Array[String]) {
-    // read in data
-    val train = Tsv.readRatings(args(0))
-    println("training ratings: " + train.size)
-    val test = Tsv.readRatings(args(1))
-    println("test ratings: " + test.size)
-    println()
-
-    // create recommenders
-    val ga = new GlobalAverage(train)
-    val ua = new UserAverage(train)
-
-    // evaluate
-    for (recommender <- Vector(ga, ua)) {
-      println(recommender)
-      println("RMSE: " + Eval.rmse(recommender, test))
-      println()
-    }
+  // evaluate
+  for (recommender <- Seq(ga, ua)) {
+    val rmse = recommender.rmse(test)
+    println("""${recommender.getClass.getSimpleName}
+              |RMSE: $rmse
+              |""".stripMargin)
   }
 }
