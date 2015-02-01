@@ -45,13 +45,7 @@ case class GlobalAverage(ratings: Seq[Rating]) extends Rater {
 
 
 case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
-
-  /**
-  * collection(key) = value is syntactic sugar for collection.update(key, value)
-  * a -> b is sugar for (a, b)
-  */
   private lazy val averages: Map[Int, Double] = {
-    // TODO use groupBy and mapValues etc.
     val sumByUser = mutable.HashMap.empty[Int, Double]
     val countByUser = mutable.HashMap.empty[Int, Int]
     for (r <- ratings) {
@@ -62,7 +56,6 @@ case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) exten
   }
 
   def rate(user: Int, item: Int) = averages.getOrElse(user, globalAverage.average)
-
 }
 object UserAverage {
   def apply(ratings: Seq[Rating]): UserAverage = apply(ratings, GlobalAverage(ratings))
