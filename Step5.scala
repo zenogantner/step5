@@ -2,6 +2,7 @@ import scala.collection.mutable
 import scala.io.Source
 
 // TODO define user and item classes/types to achieve more safety ... but for this I need to first learn how to properly implement equality for user-defined types ...
+// TODO implement storing models (via serialization?)
 
 case class Rating(user: Int, item: Int, value: Double)
 object Rating {
@@ -32,7 +33,7 @@ object Eval {
     val distances = testRatings.map { r =>
       math.pow(rater.rate(r.user, r.item) - r.value, 2)
     }
-    distances.sum / distances.length
+    math.sqrt(distances.sum / distances.length)
   }
 }
 
@@ -76,8 +77,11 @@ object Run extends App {
   val ga = GlobalAverage(train)
   val ua = UserAverage(train)
 
+  val trainer = new MFTrainer()
+  val mf = trainer.train(train) // TODO haha, I guess we need to think about naming a bit here
+
   // evaluate
-  for (rater <- Seq(ga, ua)) {
+  for (rater <- Seq(ga, ua, mf)) {
     val rmse = Eval.rmse(rater, test)
     println(s"""${rater.getClass.getSimpleName}
                |RMSE: $rmse
