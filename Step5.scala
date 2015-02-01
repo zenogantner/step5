@@ -3,10 +3,6 @@ import scala.io.Source
 
 // TODO define user and item classes/types to achieve more safety ... but for this I need to first learn how to properly implement equality for user-defined types ...
 
-/**
-* Case classes fit well in this case, it will implement hashCode, equals, and toString for you
-* {} at the end is optional
-*/
 case class Rating(user: Int, item: Int, value: Double)
 object Rating {
 
@@ -43,17 +39,12 @@ trait Rater {
 
 
 case class GlobalAverage(ratings: Seq[Rating]) extends Rater {
-
   lazy val average = ratings.map(_.value).sum / ratings.size
 
   def rate(user: Int, item: Int) = average
-
 }
 
-/**
-* http://twitter.github.io/effectivescala/ use mutable.Collection, to be more explicit
-* You can use a object with the same name as the class as a factory
-*/
+
 case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
 
   /**
@@ -75,14 +66,10 @@ case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) exten
 
 }
 object UserAverage {
-
   def apply(ratings: Seq[Rating]): UserAverage = apply(ratings, GlobalAverage(ratings))
-
 }
 
-/**
-* App is an special trait that removes the def main(args...) boilerplate
-*/
+
 object Run extends App {
   // read in data
   val train = Rating.fromTsvFile(args(0))
