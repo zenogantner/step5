@@ -23,9 +23,6 @@ object Rating {
 * rmse as a default method
 */
 trait Rater {
-
-  def ratings: Seq[Rating]
-
   def rate(user: Int, item: Int): Double
 
   def rmse(testRatings: Seq[Rating]): Double = {
