@@ -44,6 +44,7 @@ case class GlobalAverage(ratings: Seq[Rating]) extends Rater {
 }
 
 
+// TODO define ItemAverage using minimal code duplication
 case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
   private lazy val averages: Map[Int, Double] = {
     val sumByUser = mutable.HashMap.empty[Int, Double]
