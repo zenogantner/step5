@@ -29,6 +29,7 @@ trait Rater {
 
 
 object Eval {
+  /** Root mean square error */
   def rmse(rater: Rater, testRatings: Seq[Rating]): Double = {
     val distances = testRatings.map { r =>
       math.pow(rater.rate(r.user, r.item) - r.value, 2)
