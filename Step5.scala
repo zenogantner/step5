@@ -28,8 +28,8 @@ trait Rater {
 
   def rate(user: Int, item: Int): Double
 
-  def rmse(testRaitings: Seq[Rating]): Double = {
-    val distances = testRaitings.map { r =>
+  def rmse(testRatings: Seq[Rating]): Double = {
+    val distances = testRatings.map { r =>
       math.pow(rate(r.user, r.item) - r.value, 2)
     }
     distances.sum / distances.length
