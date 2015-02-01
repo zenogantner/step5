@@ -19,19 +19,19 @@ object Rating {
   }
 }
 
-/**
-* rmse as a default method
-*/
+
 trait Rater {
   def rate(user: Int, item: Int): Double
+}
 
-  def rmse(testRatings: Seq[Rating]): Double = {
+
+object Eval {
+  def rmse(rater: Rater, testRatings: Seq[Rating]): Double = {
     val distances = testRatings.map { r =>
-      math.pow(rate(r.user, r.item) - r.value, 2)
+      math.pow(rater.rate(r.user, r.item) - r.value, 2)
     }
     distances.sum / distances.length
   }
-
 }
 
 
@@ -76,14 +76,14 @@ object Run extends App {
              |test ratings: ${test.size}
              |""".stripMargin)
 
-  // create recommenders
+  // create raters
   val ga = GlobalAverage(train)
   val ua = UserAverage(train)
 
   // evaluate
-  for (recommender <- Seq(ga, ua)) {
-    val rmse = recommender.rmse(test)
-    println(s"""${recommender.getClass.getSimpleName}
+  for (rater <- Seq(ga, ua)) {
+    val rmse = Eval.rmse(rater, test)
+    println(s"""${rater.getClass.getSimpleName}
                |RMSE: $rmse
                |""".stripMargin)
   }
