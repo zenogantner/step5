@@ -5,16 +5,18 @@ import scala.io.Source
 
 case class Rating(user: Int, item: Int, value: Double)
 object Rating {
-
   def fromTsvLine(line: String): Rating = {
     val fields = line.split("\\t")
     Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble)
   }
+}
 
+
+object Ratings {
   def fromTsvFile(filename: String): Seq[Rating] = {
     Source.fromFile(filename)
       .getLines
-      .map(fromTsvLine)
+      .map(Rating.fromTsvLine)
       .toSeq
   }
 }
@@ -69,8 +71,8 @@ object UserAverage {
 
 object Run extends App {
   // read in data
-  val train = Rating.fromTsvFile(args(0))
-  val test = Rating.fromTsvFile(args(1))
+  val train = Ratings.fromTsvFile(args(0))
+  val test = Ratings.fromTsvFile(args(1))
 
   println(s"""training ratings: ${train.size}
              |test ratings: ${test.size}
