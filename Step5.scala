@@ -99,8 +99,8 @@ object Run extends App {
   // evaluate
   for (recommender <- Seq(ga, ua)) {
     val rmse = recommender.rmse(test)
-    println("""${recommender.getClass.getSimpleName}
-              |RMSE: $rmse
-              |""".stripMargin)
+    println(s"""${recommender.getClass.getSimpleName}
+               |RMSE: $rmse
+               |""".stripMargin)
   }
 }
