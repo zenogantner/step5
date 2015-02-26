@@ -8,7 +8,11 @@ case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
   def rate(user: Int, item: Int) = {
     // TODO handle unknown users and items
     // TODO cut by min and max rating
-    1 + dot(userFactors(user), itemFactors(item))
+    if (userFactors.contains(user) && itemFactors.contains(item)) {
+      dot(userFactors(user), itemFactors(item))
+    } else {
+      3
+    }
   }
   def dot[T <% Double](as: Iterable[T], bs: Iterable[T]) = {
     require(as.size == bs.size)
