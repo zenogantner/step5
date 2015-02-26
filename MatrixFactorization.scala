@@ -4,13 +4,14 @@ import scala.util.Random
 // TODO: Look for a good linear algebra library.
 
 case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
-			       val itemFactors: Map[Int, Array[Double]]) extends Rater {
+			       val itemFactors: Map[Int, Array[Double]],
+			       val globalAverage: Double) extends Rater {
   def rate(user: Int, item: Int) = {
     // TODO cut by min and max rating
     if (userFactors.contains(user) && itemFactors.contains(item)) {
       dot(userFactors(user), itemFactors(item))
     } else {
-      3
+      globalAverage
     }
   }
   def dot[T <% Double](as: Iterable[T], bs: Iterable[T]) = {
@@ -44,7 +45,8 @@ class MFTrainer {
     val userFactors: Map[Int, Array[Double]] = users.map(u => u -> createFactors).toMap
     val itemFactors: Map[Int, Array[Double]] = items.map(i => i -> createFactors).toMap
 
-    val mf = new MatrixFactorization(userFactors, itemFactors)
+    val mf = new MatrixFactorization(userFactors, itemFactors,
+                                     ratings.map(_.value).sum / ratings.size)
 
     // This is numerical computation, please excuse using imperative/non-functional stuff ;-)
     val shuffledRatings = rnd.shuffle(ratings) // TODO also try indexed access
