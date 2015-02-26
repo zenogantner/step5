@@ -1,8 +1,6 @@
 import collection.immutable
 import scala.util.Random
 
-// TODO: Look for a good linear algebra library.
-
 case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
 			       val itemFactors: Map[Int, Array[Double]],
 			       val globalAverage: Double) extends Rater {
@@ -38,7 +36,6 @@ class MFTrainer {
     }
   }
 
-  // TODO implement SGD training
   def train(ratings: Seq[Rating]): MatrixFactorization = {
     val users = ratings.map(_.user).distinct
     val items = ratings.map(_.item).distinct
