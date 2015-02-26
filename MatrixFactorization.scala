@@ -12,24 +12,24 @@ case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
       globalAverage
     }
   }
+ 
   def dot[T <% Double](as: Iterable[T], bs: Iterable[T]) = {
     require(as.size == bs.size)
     (for ((a, b) <- as zip bs) yield a * b).sum
   }
 }
-
-
-class MFTrainer {
+object MatrixFactorization {
   val k = 5
   val reg = 0.015
   val learnRate = 0.01
   val numIter = 10
   val rnd = new Random()
 
+  def apply(ratings: Seq[Rating]): MatrixFactorization = train(ratings)
+
   def createFactors(): Array[Double] = List.fill(k)(rnd.nextGaussian * 0.1).toArray
 
-  // TODO move somewhere else; better name?
-  def update(a: Array[Double], b: Array[Double]): Unit = {
+  def updateFactors(a: Array[Double], b: Array[Double]): Unit = {
     require(a.size == b.size)
     for (i <- List.range(0, k - 1)) {
       a(i) = a(i) + learnRate * b(i)
@@ -54,12 +54,13 @@ class MFTrainer {
 	val iF = itemFactors(r.item)
 	val err = r.value - mf.rate(r.user, r.item)
 	val userGradient = for (j <- 0 to k-1) yield err * iF(j) - reg * uF(j)
-	update(uF, userGradient.toArray)
+	updateFactors(uF, userGradient.toArray)
 	val itemGradient = for (j <- 0 to k-1) yield err * uF(j) - reg * iF(j)
-	update(iF, itemGradient.toArray)
+	updateFactors(iF, itemGradient.toArray)
       }
     }
     mf
   }
 }
+
 

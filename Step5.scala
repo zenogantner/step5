@@ -84,9 +84,7 @@ object Run extends App {
   val ga = GlobalAverage(train)
   val ua = UserAverage(train)
   val ia = ItemAverage(train)
-
-  val trainer = new MFTrainer()
-  val mf = trainer.train(train) // TODO haha, I guess we need to think about naming a bit here
+  val mf = MatrixFactorization(train)
 
   // evaluate
   for (rater <- Seq(ga, ua, ia, mf)) {
