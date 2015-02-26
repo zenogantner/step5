@@ -46,16 +46,9 @@ case class GlobalAverage(ratings: Seq[Rating]) extends Rater {
 }
 
 
-// TODO do this in a nicer, more functional fashion
 object AvgBy {
   def apply(ratings: Seq[Rating], selector: Function1[Rating, Int]): Map[Int, Double] = {
-    val sumBy = mutable.HashMap.empty[Int, Double]
-    val countBy = mutable.HashMap.empty[Int, Int]
-    for (r <- ratings) {
-      sumBy(selector(r)) = sumBy.getOrElse(selector(r), 0.0) + r.value
-      countBy(selector(r)) = countBy.getOrElse(selector(r), 0) + 1
-    }
-    for ((k, v) <- sumBy.toMap) yield k -> v / countBy(k)
+    ratings.groupBy(selector).mapValues((c: Seq[Rating]) => c.map(_.value).sum / c.size)
   }
 }
 
