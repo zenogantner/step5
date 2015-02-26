@@ -52,19 +52,19 @@ object AvgBy {
   }
 }
 
-case class UserAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
+case class UserAverage(ratings: Seq[Rating], global: GlobalAverage) extends Rater {
   private lazy val averages: Map[Int, Double] = AvgBy(ratings, _.user)
 
-  def rate(user: Int, item: Int) = averages.getOrElse(user, globalAverage.average)
+  def rate(user: Int, item: Int) = averages.getOrElse(user, global.average)
 }
 object UserAverage {
   def apply(ratings: Seq[Rating]): UserAverage = apply(ratings, GlobalAverage(ratings))
 }
 
-case class ItemAverage(ratings: Seq[Rating], globalAverage: GlobalAverage) extends Rater {
+case class ItemAverage(ratings: Seq[Rating], global: GlobalAverage) extends Rater {
   private lazy val averages: Map[Int, Double] = AvgBy(ratings, _.item)
 
-  def rate(user: Int, item: Int) = averages.getOrElse(item, globalAverage.average)
+  def rate(user: Int, item: Int) = averages.getOrElse(item, global.average)
 }
 object ItemAverage {
   def apply(ratings: Seq[Rating]): ItemAverage = apply(ratings, GlobalAverage(ratings))
