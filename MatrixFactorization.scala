@@ -6,7 +6,6 @@ import scala.util.Random
 case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
 			       val itemFactors: Map[Int, Array[Double]]) extends Rater {
   def rate(user: Int, item: Int) = {
-    // TODO handle unknown users and items
     // TODO cut by min and max rating
     if (userFactors.contains(user) && itemFactors.contains(item)) {
       dot(userFactors(user), itemFactors(item))
