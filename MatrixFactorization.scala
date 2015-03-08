@@ -29,10 +29,10 @@ object MatrixFactorization {
 
   def createFactors(): Array[Double] = Array.fill(k)(rnd.nextGaussian * 0.1)
 
-  def updateFactors(a: Array[Double], b: Seq[Double]): Unit = {
-    require(a.size == b.size)
+  def updateFactors(factors: Array[Double], updates: Seq[Double]): Unit = {
+    require(factors.size == updates.size)
     for (i <- 0 until k) {
-      a(i) += learnRate * b(i)
+      factors(i) += learnRate * updates(i)
     }
   }
 
