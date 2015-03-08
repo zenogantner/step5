@@ -1,4 +1,3 @@
-import collection.immutable
 import scala.util.Random
 
 case class MatrixFactorization(val userFactors: Map[Int, Array[Double]],
