@@ -31,7 +31,7 @@ object MatrixFactorization {
 
   def updateFactors(a: Array[Double], b: Seq[Double]): Unit = {
     require(a.size == b.size)
-    for (i <- List.range(0, k - 1)) {
+    for (i <- 0 until k) {
       a(i) += learnRate * b(i)
     }
   }
