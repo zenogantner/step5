@@ -27,7 +27,7 @@ object MatrixFactorization {
 
   def apply(ratings: Seq[Rating]): MatrixFactorization = train(ratings)
 
-  def createFactors(): Array[Double] = List.fill(k)(rnd.nextGaussian * 0.1).toArray
+  def createFactors(): Array[Double] = Array.fill(k)(rnd.nextGaussian * 0.1)
 
   def updateFactors(a: Array[Double], b: Seq[Double]): Unit = {
     require(a.size == b.size)
