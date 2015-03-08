@@ -53,8 +53,8 @@ object MatrixFactorization {
       uF = userFactors(r.user)
       iF = itemFactors(r.item)
       err = r.value - mf.rate(r.user, r.item)
-      userGradient = for (j <- 0 to k-1) yield err * iF(j) - reg * uF(j)
-      itemGradient = for (j <- 0 to k-1) yield err * uF(j) - reg * iF(j)
+      userGradient = for (j <- 0 until k) yield err * iF(j) - reg * uF(j)
+      itemGradient = for (j <- 0 until k) yield err * uF(j) - reg * iF(j)
     } {
       updateFactors(uF, userGradient)
       updateFactors(iF, itemGradient)
