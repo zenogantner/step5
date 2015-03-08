@@ -22,7 +22,7 @@ object MatrixFactorization {
   val reg = 0.015
   val learnRate = 0.01
   val numIter = 10
-  val rnd = new Random()
+  val rnd = new Random(1)
 
   def apply(ratings: Seq[Rating]): MatrixFactorization = train(ratings)
 
