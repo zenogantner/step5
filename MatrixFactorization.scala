@@ -47,16 +47,17 @@ object MatrixFactorization {
 
     // This is numerical computation, please excuse using imperative/non-functional stuff ;-)
     val shuffledRatings = rnd.shuffle(ratings)
-    for (i <- 1 to numIter) {
-      for (r <- shuffledRatings) {
-	val uF = userFactors(r.user)
-	val iF = itemFactors(r.item)
-	val err = r.value - mf.rate(r.user, r.item)
-	val userGradient = for (j <- 0 to k-1) yield err * iF(j) - reg * uF(j)
-	updateFactors(uF, userGradient.toArray)
-	val itemGradient = for (j <- 0 to k-1) yield err * uF(j) - reg * iF(j)
-	updateFactors(iF, itemGradient.toArray)
-      }
+    for {
+      i <- 1 to numIter
+      r <- shuffledRatings
+      uF = userFactors(r.user)
+      iF = itemFactors(r.item)
+      err = r.value - mf.rate(r.user, r.item)
+      userGradient = for (j <- 0 to k-1) yield err * iF(j) - reg * uF(j)
+      itemGradient = for (j <- 0 to k-1) yield err * uF(j) - reg * iF(j)
+    } {
+      updateFactors(uF, userGradient.toArray)
+      updateFactors(iF, itemGradient.toArray)
     }
     mf
   }
