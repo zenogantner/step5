@@ -29,7 +29,7 @@ object MatrixFactorization {
 
   def createFactors(): Array[Double] = List.fill(k)(rnd.nextGaussian * 0.1).toArray
 
-  def updateFactors(a: Array[Double], b: Array[Double]): Unit = {
+  def updateFactors(a: Array[Double], b: Seq[Double]): Unit = {
     require(a.size == b.size)
     for (i <- List.range(0, k - 1)) {
       a(i) += learnRate * b(i)
@@ -56,8 +56,8 @@ object MatrixFactorization {
       userGradient = for (j <- 0 to k-1) yield err * iF(j) - reg * uF(j)
       itemGradient = for (j <- 0 to k-1) yield err * uF(j) - reg * iF(j)
     } {
-      updateFactors(uF, userGradient.toArray)
-      updateFactors(iF, itemGradient.toArray)
+      updateFactors(uF, userGradient)
+      updateFactors(iF, itemGradient)
     }
     mf
   }
