@@ -36,6 +36,11 @@ object MatrixFactorization {
     }
   }
 
+  def gradient(as: Seq[Double], bs: Seq[Double], err: Double): Seq[Double] = {
+    for (j <- 0 until k)
+      yield err * bs(j) - reg * as(j)
+  }
+
   def train(ratings: Seq[Rating]): MatrixFactorization = {
     val users = ratings.map(_.user).distinct
     val items = ratings.map(_.item).distinct
@@ -53,8 +58,8 @@ object MatrixFactorization {
       uF = userFactors(r.user)
       iF = itemFactors(r.item)
       err = r.value - mf.rate(r.user, r.item)
-      userGradient = for (j <- 0 until k) yield err * iF(j) - reg * uF(j)
-      itemGradient = for (j <- 0 until k) yield err * uF(j) - reg * iF(j)
+      userGradient = gradient(uF, iF, err)
+      itemGradient = gradient(iF, uF, err)
     } {
       updateFactors(uF, userGradient)
       updateFactors(iF, itemGradient)
