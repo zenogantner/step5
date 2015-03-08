@@ -36,9 +36,10 @@ object MatrixFactorization {
     }
   }
 
-  def gradient(as: Seq[Double], bs: Seq[Double], err: Double): Seq[Double] = {
+  /** gradient of the regularized loss function */
+  def gradient(variables: Seq[Double], constants: Seq[Double], err: Double): Seq[Double] = {
     for (j <- 0 until k)
-      yield err * bs(j) - reg * as(j)
+      yield err * constants(j) - reg * variables(j)
   }
 
   def train(ratings: Seq[Rating]): MatrixFactorization = {
