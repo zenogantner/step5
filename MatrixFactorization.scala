@@ -46,7 +46,7 @@ object MatrixFactorization {
                                      ratings.map(_.value).sum / ratings.size)
 
     // This is numerical computation, please excuse using imperative/non-functional stuff ;-)
-    val shuffledRatings = rnd.shuffle(ratings) // TODO also try indexed access
+    val shuffledRatings = rnd.shuffle(ratings)
     for (i <- 1 to numIter) {
       // TODO move into its own method
       for (r <- shuffledRatings) {
