@@ -1,5 +1,6 @@
 import scala.collection.mutable
 import scala.io.Source
+import scala.util.Random
 
 // TODO define user and item classes/types to achieve more safety ... but for this I need to first learn how to properly implement equality for user-defined types ...
 // TODO implement storing models (via serialization?)
@@ -72,6 +73,8 @@ object ItemAverage {
 
 
 object Run extends App {
+  Random.setSeed(1) // Make sure we always get the same sequence of random numbers.
+
   // read in data
   val train = Ratings.fromTsvFile(args(0))
   val test = Ratings.fromTsvFile(args(1))

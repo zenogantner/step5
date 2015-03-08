@@ -22,11 +22,10 @@ object MatrixFactorization {
   val reg = 0.015
   val learnRate = 0.01
   val numIter = 10
-  val rnd = new Random(1)
 
   def apply(ratings: Seq[Rating]): MatrixFactorization = train(ratings)
 
-  def createFactors(): Array[Double] = Array.fill(k)(rnd.nextGaussian * 0.1)
+  def createFactors(): Array[Double] = Array.fill(k)(Random.nextGaussian * 0.1)
 
   def updateFactors(factors: Array[Double], updates: Seq[Double]): Unit = {
     require(factors.size == updates.size)
@@ -51,7 +50,7 @@ object MatrixFactorization {
                                      ratings.map(_.value).sum / ratings.size)
 
     // This is numerical computation, please excuse using imperative/non-functional stuff ;-)
-    val shuffledRatings = rnd.shuffle(ratings)
+    val shuffledRatings = Random.shuffle(ratings)
     for {
       i <- 1 to numIter
       r <- shuffledRatings
