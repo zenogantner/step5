@@ -12,3 +12,4 @@ Interested in serious recommender system algorithm implementations? Look here:
 * http://mymedialite.net/ (C#)
 * http://mahout.apache.org/ (Java)
 * https://dato.com/products/create/docs/graphlab.toolkits.recommender.html (C++)
+* http://libfm.org/ (C++)
