@@ -1,5 +1,5 @@
 # step5
-My personal playground to learn Scala and to play with some recommender system concepts.
+My playground to learn Scala and to play with some recommendation/learning to rank concepts.
 https://github.com/zenogantner/step5
 
 Developed using Scala 2.11.5.
