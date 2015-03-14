@@ -1,4 +1,3 @@
-import scala.collection.mutable
 import scala.io.Source
 import scala.util.Random
 
