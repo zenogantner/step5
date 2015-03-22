@@ -71,7 +71,7 @@ object ItemAverage {
 }
 
 
-object Run extends App {
+object RatingPrediction extends App {
   Random.setSeed(1) // Make sure we always get the same sequence of random numbers.
 
   // read in data
